@@ -4,15 +4,16 @@ export async function apiFetch<T>(
     path: string,
     init?: RequestInit,
 ): Promise<T> {
+    const { headers: initHeaders, ...restInit } = init ?? {};
     const token = localStorage.getItem("token");
-    const headers = new Headers(init?.headers);
+    const headers = new Headers(initHeaders);
     headers.set("Content-Type", "application/json");
     if (token) {
         headers.set("Authorization", `Bearer ${token}`);
     }
     const res = await fetch(`${API_URL}${path}`, {
+        ...restInit,
         headers,
-        ...init,
     });
 
     if (res.status === 401) {

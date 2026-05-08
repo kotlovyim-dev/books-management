@@ -6,6 +6,7 @@ import type { Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableShutdownHooks();
   const logger = new Logger('Bootstrap');
   const httpLogger = new Logger('HTTP');
 

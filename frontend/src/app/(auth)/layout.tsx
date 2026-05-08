@@ -8,7 +8,6 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     const isLoginPage = usePathname() === "/login";
-    console.log("isLoginPage", isLoginPage);
     return (
         <>
             <AuthHeader isLoginPage={isLoginPage} />
