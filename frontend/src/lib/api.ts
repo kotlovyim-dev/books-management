@@ -1,20 +1,37 @@
-import ky from "ky";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api/";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api";
+export async function apiFetch<T>(
+    path: string,
+    init?: RequestInit,
+): Promise<T> {
+    const token = localStorage.getItem("token");
+    const headers = new Headers(init?.headers);
+    headers.set("Content-Type", "application/json");
+    if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+    }
+    const res = await fetch(`${API_URL}${path}`, {
+        headers,
+        ...init,
+    });
 
-export const api = ky.create({
-    prefix: API_URL,
-    headers: {
-        "Content-Type": "application/json",
-    },
-    hooks: {
-        beforeRequest: [
-            ({ request }) => {
-                const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-                if (token) {
-                    request.headers.set("Authorization", `Bearer ${token}`);
-                }
-            },
-        ],
-    },
-});
+    if (res.status === 401) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+        return new Promise(() => {});
+    }
+
+    if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(
+            (error as { message?: string }).message ??
+                `API error ${res.status}`,
+        );
+    }
+
+    if (res.status === 204 || res.headers.get("content-length") === "0") {
+        return undefined as T;
+    }
+
+    return res.json() as Promise<T>;
+}

@@ -16,7 +16,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-  ) { }
+  ) {}
 
   private toSafeUser(user: {
     id: string;
@@ -33,7 +33,8 @@ export class AuthService {
 
   async findUserByEmail(email: string) {
     return this.prisma.user.findUnique({
-      where: { email }, select: {
+      where: { email },
+      select: {
         id: true,
         name: true,
         email: true,
@@ -105,5 +106,17 @@ export class AuthService {
       user: this.toSafeUser(existingUser),
       accessToken,
     };
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    return this.toSafeUser(user);
   }
 }
