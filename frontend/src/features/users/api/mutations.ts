@@ -23,7 +23,13 @@ export const useUpdateUser = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ id, payload }: { id: string; payload: UpdateUserValues }) => {
+        mutationFn: async ({
+            id,
+            payload,
+        }: {
+            id: string;
+            payload: UpdateUserValues;
+        }) => {
             return apiFetch<User>(`users/${id}`, {
                 method: "PUT",
                 body: JSON.stringify(payload),
@@ -31,7 +37,9 @@ export const useUpdateUser = () => {
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["users"] });
-            queryClient.invalidateQueries({ queryKey: ["users", variables.id] });
+            queryClient.invalidateQueries({
+                queryKey: ["users", variables.id],
+            });
         },
     });
 };

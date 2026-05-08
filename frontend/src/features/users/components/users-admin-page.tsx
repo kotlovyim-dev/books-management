@@ -184,7 +184,9 @@ export function UsersAdminPage() {
             >
                 <ResponsiveDialogContent>
                     <ResponsiveDialogHeader>
-                        <ResponsiveDialogTitle>Delete user</ResponsiveDialogTitle>
+                        <ResponsiveDialogTitle>
+                            Delete user
+                        </ResponsiveDialogTitle>
                         <ResponsiveDialogDescription>
                             This action cannot be undone. This will permanently
                             delete "{deleteTarget?.name}".

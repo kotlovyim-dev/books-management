@@ -115,7 +115,9 @@ export function UserForm({
                 <Input
                     id="user-password"
                     type="password"
-                    placeholder={mode === "edit" ? "Leave blank to keep" : "********"}
+                    placeholder={
+                        mode === "edit" ? "Leave blank to keep" : "********"
+                    }
                     className="bg-zinc-50/50 border-zinc-200 rounded-lg"
                     {...register("password")}
                 />

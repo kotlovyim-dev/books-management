@@ -50,9 +50,7 @@ export function UsersAdminTable({
                 accessorKey: "email",
                 header: "Email",
                 cell: ({ row }) => (
-                    <div className="text-zinc-600">
-                        {row.getValue("email")}
-                    </div>
+                    <div className="text-zinc-600">{row.getValue("email")}</div>
                 ),
             },
             {
@@ -162,12 +160,7 @@ export function UsersAdminTableSkeleton() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        {[
-                            "Name",
-                            "Email",
-                            "Role",
-                            "Actions",
-                        ].map((label) => (
+                        {["Name", "Email", "Role", "Actions"].map((label) => (
                             <TableHead key={label}>{label}</TableHead>
                         ))}
                     </TableRow>
