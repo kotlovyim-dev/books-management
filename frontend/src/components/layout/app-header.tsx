@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Library } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "../ui/button";
 
 export interface AppHeaderProps {
@@ -15,6 +16,8 @@ export function AppHeader({
     role = "user",
 }: AppHeaderProps) {
     const router = useRouter();
+    const queryClient = useQueryClient();
+    const isAdmin = role === "admin";
 
     return (
         <div className="flex sticky top-0 z-50 justify-between items-center py-4 px-6 bg-white border-b border-zinc-200">
@@ -25,13 +28,21 @@ export function AppHeader({
                 </span>
             </div>
 
-            <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:block">
+            <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex items-center gap-6">
                 <Link
                     href="/books"
                     className="text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
                 >
                     Books
                 </Link>
+                {isAdmin && (
+                    <Link
+                        href="/users"
+                        className="text-sm font-medium text-zinc-600 hover:text-zinc-900 transition-colors"
+                    >
+                        Users
+                    </Link>
+                )}
             </nav>
 
             <div className="flex items-center gap-4">
@@ -46,6 +57,7 @@ export function AppHeader({
                     variant="outline"
                     onClick={() => {
                         localStorage.removeItem("token");
+                        queryClient.clear();
                         router.push("/login");
                     }}
                 >

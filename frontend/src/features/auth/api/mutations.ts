@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { LoginValues, SignupValues } from "../schemas";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ type AuthResponse = {
 
 export const useLogin = () => {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: async (credentials: LoginValues) => {
@@ -20,6 +21,8 @@ export const useLogin = () => {
         },
         onSuccess: (data) => {
             localStorage.setItem("token", data.accessToken);
+            queryClient.setQueryData(["me"], data.user);
+            queryClient.invalidateQueries({ queryKey: ["books"] });
             router.push("/books");
         },
     });
@@ -27,6 +30,7 @@ export const useLogin = () => {
 
 export const useSignup = () => {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: async (data: SignupValues) => {
@@ -37,6 +41,8 @@ export const useSignup = () => {
         },
         onSuccess: (data) => {
             localStorage.setItem("token", data.accessToken);
+            queryClient.setQueryData(["me"], data.user);
+            queryClient.invalidateQueries({ queryKey: ["books"] });
             router.push("/books");
         },
     });
