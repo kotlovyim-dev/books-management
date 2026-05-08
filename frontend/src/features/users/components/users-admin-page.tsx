@@ -1,25 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-    ResponsiveDialog,
-    ResponsiveDialogClose,
-    ResponsiveDialogContent,
-    ResponsiveDialogDescription,
-    ResponsiveDialogFooter,
-    ResponsiveDialogHeader,
-    ResponsiveDialogTitle,
-    ResponsiveDialogTrigger,
-} from "@/components/ui/responsive-dialog";
 import { useUsers } from "../api/queries";
 import { useCreateUser, useDeleteUser, useUpdateUser } from "../api/mutations";
 import { User } from "../types";
-import { UserForm } from "./user-form";
 import { CreateUserValues, UpdateUserValues } from "../schemas";
-import { UsersAdminTable, UsersAdminTableSkeleton } from "./users-admin-table";
+import { UsersAdminTable } from "./users-admin-table";
+import { UsersAdminTableSkeleton } from "./users-admin-table-skeleton";
+import { CreateUserModal } from "./create-user-modal";
+import { DeleteUserModal } from "./delete-user-modal";
+import { EditUserModal } from "./edit-user-modal";
 
 export function UsersAdminPage() {
     const { data: users, isLoading, isError } = useUsers();
@@ -78,40 +68,13 @@ export function UsersAdminPage() {
                         </h1>
                     </div>
 
-                    <ResponsiveDialog
+                    <CreateUserModal
                         open={createOpen}
                         onOpenChange={setCreateOpen}
-                    >
-                        <ResponsiveDialogTrigger asChild>
-                            <Button className="bg-zinc-900 hover:bg-zinc-800 text-white rounded-full px-5">
-                                <Plus className="h-4 w-4" />
-                                New user
-                            </Button>
-                        </ResponsiveDialogTrigger>
-                        <ResponsiveDialogContent>
-                            <ResponsiveDialogHeader>
-                                <ResponsiveDialogTitle>
-                                    Add a new user
-                                </ResponsiveDialogTitle>
-                                <ResponsiveDialogDescription>
-                                    Create a new account and set their role.
-                                </ResponsiveDialogDescription>
-                            </ResponsiveDialogHeader>
-                            {createUser.error && (
-                                <div className="p-3 text-sm text-red-500 bg-red-50/50 border border-red-200 rounded-lg">
-                                    {createUser.error.message}
-                                </div>
-                            )}
-                            <UserForm
-                                mode="create"
-                                submitLabel="Create user"
-                                onSubmit={(values) =>
-                                    handleCreate(values as CreateUserValues)
-                                }
-                                isSubmitting={createUser.isPending}
-                            />
-                        </ResponsiveDialogContent>
-                    </ResponsiveDialog>
+                        onSubmit={handleCreate}
+                        isSubmitting={createUser.isPending}
+                        error={createUser.error}
+                    />
                 </div>
 
                 <div className="mt-6">
@@ -133,86 +96,29 @@ export function UsersAdminPage() {
                 </div>
             </main>
 
-            <ResponsiveDialog
-                open={Boolean(editUser)}
+            <EditUserModal
+                user={editUser}
                 onOpenChange={(open) => {
                     if (!open) {
                         setEditUser(null);
                     }
                 }}
-            >
-                <ResponsiveDialogContent>
-                    <ResponsiveDialogHeader>
-                        <ResponsiveDialogTitle>Edit user</ResponsiveDialogTitle>
-                        <ResponsiveDialogDescription>
-                            Update the account details below.
-                        </ResponsiveDialogDescription>
-                    </ResponsiveDialogHeader>
-                    {updateUser.error && (
-                        <div className="p-3 text-sm text-red-500 bg-red-50/50 border border-red-200 rounded-lg">
-                            {updateUser.error.message}
-                        </div>
-                    )}
-                    <UserForm
-                        mode="edit"
-                        defaultValues={
-                            editUser
-                                ? {
-                                      name: editUser.name,
-                                      email: editUser.email,
-                                      role: editUser.role,
-                                      password: "",
-                                  }
-                                : undefined
-                        }
-                        submitLabel="Save changes"
-                        onSubmit={(values) =>
-                            handleEdit(values as UpdateUserValues)
-                        }
-                        isSubmitting={updateUser.isPending}
-                    />
-                </ResponsiveDialogContent>
-            </ResponsiveDialog>
+                onSubmit={handleEdit}
+                isSubmitting={updateUser.isPending}
+                error={updateUser.error}
+            />
 
-            <ResponsiveDialog
-                open={Boolean(deleteTarget)}
+            <DeleteUserModal
+                user={deleteTarget}
                 onOpenChange={(open) => {
                     if (!open) {
                         setDeleteTarget(null);
                     }
                 }}
-            >
-                <ResponsiveDialogContent>
-                    <ResponsiveDialogHeader>
-                        <ResponsiveDialogTitle>
-                            Delete user
-                        </ResponsiveDialogTitle>
-                        <ResponsiveDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete "{deleteTarget?.name}".
-                        </ResponsiveDialogDescription>
-                    </ResponsiveDialogHeader>
-
-                    {deleteUser.error && (
-                        <div className="p-3 text-sm text-red-500 bg-red-50/50 border border-red-200 rounded-lg">
-                            {deleteUser.error.message}
-                        </div>
-                    )}
-
-                    <ResponsiveDialogFooter>
-                        <ResponsiveDialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                        </ResponsiveDialogClose>
-                        <Button
-                            variant="destructive"
-                            onClick={handleDelete}
-                            disabled={deleteUser.isPending}
-                        >
-                            {deleteUser.isPending ? "Deleting..." : "Delete"}
-                        </Button>
-                    </ResponsiveDialogFooter>
-                </ResponsiveDialogContent>
-            </ResponsiveDialog>
+                onConfirm={handleDelete}
+                isSubmitting={deleteUser.isPending}
+                error={deleteUser.error}
+            />
         </div>
     );
 }

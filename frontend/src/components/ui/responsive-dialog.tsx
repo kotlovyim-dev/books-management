@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { useMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 import {
     Dialog,
     DialogClose,
@@ -125,4 +126,18 @@ export function ResponsiveDialogDescription({
     const { isMobile } = useResponsiveDialogContext();
     const Description = isMobile ? DrawerDescription : DialogDescription;
     return <Description {...props} />;
+}
+
+export function ResponsiveDialogBody({
+    className,
+    ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+    const { isMobile } = useResponsiveDialogContext();
+
+    return (
+        <div
+            className={cn(isMobile ? "px-4 pb-4" : "", className)}
+            {...props}
+        />
+    );
 }
